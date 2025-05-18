@@ -8,6 +8,7 @@ import com.enigmacamp.latihanspring.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -19,15 +20,19 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
 
     @Override
-    public ProductResponse createProduct(ProductRequest product) {
-        Product newProduct = new Product();
-        newProduct.setName(product.getName());
-        newProduct.setPrice(product.getPrice());
-        newProduct.setDescription(product.getDescription());
-        newProduct.setQuantity(product.getQuantity());
-        productRepository.save(newProduct);
+    public List<ProductResponse> createProduct(List<ProductRequest> product) {
 
-        return mapToResponse(newProduct);
+        return product.stream().map(p -> {
+            Product newProduct = new Product();
+            newProduct.setName(p.getName());
+            newProduct.setPrice(p.getPrice());
+            newProduct.setDescription(p.getDescription());
+            newProduct.setQuantity(p.getQuantity());
+
+            productRepository.save(newProduct);
+
+            return newProduct;
+        }).map(this::mapToResponse).toList();
     }
 
     @Override
@@ -36,9 +41,40 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public List<ProductResponse> findByNameContainingIgnoreCase(String name) {
+        return productRepository.findAll().stream()
+                .filter(p -> p.getName().toLowerCase().contains(name.toLowerCase()))
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    @Override
+    public List<ProductResponse> findByPriceLessThan(BigDecimal price) {
+        return productRepository.findAll().stream()
+                .filter(p -> p.getPrice().compareTo(price) < 0)
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    @Override
+    public List<ProductResponse> findByQuantityGreaterThan(Integer quantity) {
+        return productRepository.findAll().stream()
+                .filter(p -> p.getQuantity().compareTo(quantity) > 0)
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    @Override
+    public List<ProductResponse> findByDescriptionContaining(String description) {
+        return productRepository.findAll().stream()
+                .filter(p -> p.getDescription().toLowerCase().contains(description.toLowerCase()))
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    @Override
     public List<ProductResponse> findAll() {
-        List<Product> products = productRepository.findAll();
-        return products.stream().map(this::mapToResponse).collect(Collectors.toList());
+        return productRepository.findAll().stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
     @Override
@@ -59,6 +95,7 @@ public class ProductServiceImpl implements ProductService {
 
     private ProductResponse mapToResponse(Product product) {
         ProductResponse productResponse = new ProductResponse();
+        productResponse.setId(product.getId());
         productResponse.setName(product.getName());
         productResponse.setPrice(product.getPrice());
         productResponse.setDescription(product.getDescription());

@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -22,7 +23,7 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<CommonResponse<ProductResponse>> save(@RequestBody ProductRequest product) {
+    public ResponseEntity<CommonResponse<List<ProductResponse>>> save(@RequestBody List<ProductRequest> product) {
         return ResponseUtil.createResponse(
                 HttpStatus.CREATED,
                 "Produk Berhasil dibuat",
@@ -45,6 +46,42 @@ public class ProductController {
                 HttpStatus.OK,
                 "Daftar produk ditemukan",
                 productService.findAll()
+        );
+    }
+
+    @GetMapping("/by-name")
+    public ResponseEntity<CommonResponse<List<ProductResponse>>> findByNameContainingIgnoreCase(@RequestParam String name) {
+        return ResponseUtil.createResponse(
+                HttpStatus.OK,
+                "Daftar produk berhasil didapatkan",
+                productService.findByNameContainingIgnoreCase(name)
+        );
+    }
+
+    @GetMapping("/by-price-less-than")
+    public ResponseEntity<CommonResponse<List<ProductResponse>>> findByPriceLessThan(@RequestParam BigDecimal price) {
+        return ResponseUtil.createResponse(
+                HttpStatus.OK,
+                "Daftar produk didapatkan",
+                productService.findByPriceLessThan(price)
+        );
+    }
+
+    @GetMapping("/by-quantity-greater-than")
+    public ResponseEntity<CommonResponse<List<ProductResponse>>> findByQuantityGreaterThan(@RequestParam Integer quantity) {
+        return ResponseUtil.createResponse(
+                HttpStatus.OK,
+                "Daftar produk didapatkan",
+                productService.findByQuantityGreaterThan(quantity)
+        );
+    }
+
+    @GetMapping("/by-description")
+    public ResponseEntity<CommonResponse<List<ProductResponse>>> findByDescriptionContaining(@RequestParam String description) {
+        return ResponseUtil.createResponse(
+                HttpStatus.OK,
+                "Daftar produk didapatkan",
+                productService.findByDescriptionContaining(description)
         );
     }
 
