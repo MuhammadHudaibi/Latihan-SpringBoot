@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -91,6 +92,17 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);
+    }
+
+    @Override
+    public List<ProductResponse> findProductCreatedAtBetween(LocalDateTime startDate, LocalDateTime endDate) {
+        return productRepository.findProductCreatedAtBetween(startDate, endDate)
+                .stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    public Long countProductsWithPriceGreaterThan(BigDecimal price) {
+        return productRepository.countProductsWithPriceGreaterThan(price);
     }
 
     private ProductResponse mapToResponse(Product product) {

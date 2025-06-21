@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -49,7 +51,7 @@ public class ProductController {
         );
     }
 
-    @GetMapping("/by-name")
+    @GetMapping("/search/by-name")
     public ResponseEntity<CommonResponse<List<ProductResponse>>> findByNameContainingIgnoreCase(@RequestParam String name) {
         return ResponseUtil.createResponse(
                 HttpStatus.OK,
@@ -58,7 +60,7 @@ public class ProductController {
         );
     }
 
-    @GetMapping("/by-price-less-than")
+    @GetMapping("/search/by-price-less-than")
     public ResponseEntity<CommonResponse<List<ProductResponse>>> findByPriceLessThan(@RequestParam BigDecimal price) {
         return ResponseUtil.createResponse(
                 HttpStatus.OK,
@@ -73,6 +75,24 @@ public class ProductController {
                 HttpStatus.OK,
                 "Daftar produk didapatkan",
                 productService.findByQuantityGreaterThan(quantity)
+        );
+    }
+
+    @GetMapping("/search/created-between")
+    public ResponseEntity<CommonResponse<List<ProductResponse>>> findProductCreatedAtBetween(@RequestParam LocalDateTime start, @RequestParam LocalDateTime end) {
+        return ResponseUtil.createResponse(
+                HttpStatus.OK,
+                "Daftar produk didapatkan",
+                productService.findProductCreatedAtBetween(start, end)
+        );
+    }
+
+    @GetMapping("/count-product-with-price-greater-than")
+    public ResponseEntity<CommonResponse<Long>> countProductWithPriceGreaterThan(@RequestParam BigDecimal price) {
+        return ResponseUtil.createResponse(
+                HttpStatus.OK,
+                "Jumlah produk didapatkan",
+                productService.countProductsWithPriceGreaterThan(price)
         );
     }
 
