@@ -5,6 +5,7 @@ import com.enigmacamp.latihanspring.dto.response.CommonResponse;
 import com.enigmacamp.latihanspring.dto.response.ProductResponse;
 import com.enigmacamp.latihanspring.service.ProductService;
 import com.enigmacamp.latihanspring.util.ResponseUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class ProductController {
     private final ProductService productService;
 
     @PostMapping
-    public ResponseEntity<CommonResponse<List<ProductResponse>>> save(@RequestBody List<ProductRequest> product) {
+    public ResponseEntity<CommonResponse<List<ProductResponse>>> save(@Valid @RequestBody List<ProductRequest> product) {
         return ResponseUtil.createResponse(
                 HttpStatus.CREATED,
                 "Produk Berhasil dibuat",

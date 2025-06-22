@@ -1,5 +1,6 @@
 package com.enigmacamp.latihanspring.dto.response;
 
+import com.enigmacamp.latihanspring.model.ProductStatus;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -12,6 +13,7 @@ public class ProductResponse {
     private String description;
     private BigDecimal price;
     private Integer quantity;
+    private ProductStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

@@ -29,6 +29,7 @@ public class ProductServiceImpl implements ProductService {
             newProduct.setPrice(p.getPrice());
             newProduct.setDescription(p.getDescription());
             newProduct.setQuantity(p.getQuantity());
+            newProduct.setStatus(p.getStatus());
 
             productRepository.save(newProduct);
 
@@ -112,6 +113,7 @@ public class ProductServiceImpl implements ProductService {
         productResponse.setPrice(product.getPrice());
         productResponse.setDescription(product.getDescription());
         productResponse.setQuantity(product.getQuantity());
+        productResponse.setStatus(product.getStatus());
         productResponse.setCreatedAt(product.getCreatedAt());
         productResponse.setUpdatedAt(product.getUpdatedAt());
         return productResponse;
