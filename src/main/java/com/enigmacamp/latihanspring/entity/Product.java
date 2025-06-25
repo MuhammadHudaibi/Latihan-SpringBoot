@@ -45,6 +45,10 @@ public class Product {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
     @PrePersist
     public void prePersist() {
         this.createdAt = this.updatedAt = LocalDateTime.now();

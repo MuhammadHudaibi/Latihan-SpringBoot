@@ -18,4 +18,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT COUNT(p) FROM Product p WHERE p.price > :minPrice")
     Long countProductsWithPriceGreaterThan(@Param("minPrice") BigDecimal minPrice);
+
+    List<Product> findByNameContainingIgnoreCase(String name);
+    List<Product> findByPriceLessThan(BigDecimal price);
+    List<Product> findByQuantityGreaterThan(Integer quantity);
+    List<Product> findByDescriptionContainingIgnoreCase(String description);
 }

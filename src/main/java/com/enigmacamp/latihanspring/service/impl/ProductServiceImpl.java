@@ -1,12 +1,16 @@
 package com.enigmacamp.latihanspring.service.impl;
 
 import com.enigmacamp.latihanspring.dto.request.ProductRequest;
+import com.enigmacamp.latihanspring.dto.response.CategoryResponse;
 import com.enigmacamp.latihanspring.dto.response.ProductResponse;
+import com.enigmacamp.latihanspring.entity.Category;
 import com.enigmacamp.latihanspring.entity.Product;
 import com.enigmacamp.latihanspring.repository.ProductRepository;
+import com.enigmacamp.latihanspring.service.CategoryService;
 import com.enigmacamp.latihanspring.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -19,22 +23,27 @@ import java.util.stream.Collectors;
 public class ProductServiceImpl implements ProductService {
 
     private final ProductRepository productRepository;
+    private final CategoryService categoryService;
 
     @Override
     public List<ProductResponse> createProduct(List<ProductRequest> product) {
 
-        return product.stream().map(p -> {
+        List<Product> productsToSave = product.stream().map(p -> {
             Product newProduct = new Product();
+            Category category = categoryService.getCategoryById(p.getCategoryId());
+
             newProduct.setName(p.getName());
             newProduct.setPrice(p.getPrice());
             newProduct.setDescription(p.getDescription());
             newProduct.setQuantity(p.getQuantity());
             newProduct.setStatus(p.getStatus());
-
-            productRepository.save(newProduct);
-
+            newProduct.setCategory(category);
             return newProduct;
-        }).map(this::mapToResponse).toList();
+        }).toList();
+
+        productRepository.saveAll(productsToSave);
+
+        return productsToSave.stream().map(this::mapToResponse).toList();
     }
 
     @Override
@@ -44,34 +53,26 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductResponse> findByNameContainingIgnoreCase(String name) {
-        return productRepository.findAll().stream()
-                .filter(p -> p.getName().toLowerCase().contains(name.toLowerCase()))
-                .map(this::mapToResponse)
-                .toList();
+        return productRepository.findByNameContainingIgnoreCase(name)
+                .stream().map(this::mapToResponse).toList();
     }
 
     @Override
     public List<ProductResponse> findByPriceLessThan(BigDecimal price) {
-        return productRepository.findAll().stream()
-                .filter(p -> p.getPrice().compareTo(price) < 0)
-                .map(this::mapToResponse)
-                .toList();
+        return productRepository.findByPriceLessThan(price)
+                .stream().map(this::mapToResponse).toList();
     }
 
     @Override
     public List<ProductResponse> findByQuantityGreaterThan(Integer quantity) {
-        return productRepository.findAll().stream()
-                .filter(p -> p.getQuantity().compareTo(quantity) > 0)
-                .map(this::mapToResponse)
-                .toList();
+        return productRepository.findByQuantityGreaterThan(quantity)
+                .stream().map(this::mapToResponse).toList();
     }
 
     @Override
     public List<ProductResponse> findByDescriptionContaining(String description) {
-        return productRepository.findAll().stream()
-                .filter(p -> p.getDescription().toLowerCase().contains(description.toLowerCase()))
-                .map(this::mapToResponse)
-                .toList();
+        return productRepository.findByDescriptionContainingIgnoreCase(description)
+                .stream().map(this::mapToResponse).toList();
     }
 
     @Override
@@ -79,13 +80,20 @@ public class ProductServiceImpl implements ProductService {
         return productRepository.findAll().stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public ProductResponse updateProduct(Long id, ProductRequest product) {
-        Product updateProduct = productRepository.findById(id).orElse(null);
+        Product updateProduct = productRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Produk tidak ditemukan dengan id: " + id));
+
+        Category category = categoryService.getCategoryById(product.getCategoryId());
+
         updateProduct.setName(product.getName());
         updateProduct.setPrice(product.getPrice());
         updateProduct.setDescription(product.getDescription());
         updateProduct.setQuantity(product.getQuantity());
+        updateProduct.setStatus(product.getStatus());
+        updateProduct.setCategory(category);
         productRepository.save(updateProduct);
         return mapToResponse(updateProduct);
     }
@@ -114,6 +122,16 @@ public class ProductServiceImpl implements ProductService {
         productResponse.setDescription(product.getDescription());
         productResponse.setQuantity(product.getQuantity());
         productResponse.setStatus(product.getStatus());
+
+        if (product.getCategory() != null) {
+            productResponse.setCategory(
+                    CategoryResponse.builder()
+                            .id(product.getCategory().getId())
+                            .name(product.getCategory().getName())
+                            .build()
+            );
+        }
+
         productResponse.setCreatedAt(product.getCreatedAt());
         productResponse.setUpdatedAt(product.getUpdatedAt());
         return productResponse;

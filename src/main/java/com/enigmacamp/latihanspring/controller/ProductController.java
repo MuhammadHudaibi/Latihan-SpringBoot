@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -107,7 +106,7 @@ public class ProductController {
     }
 
     @PutMapping
-    public ResponseEntity<CommonResponse<ProductResponse>> update(@RequestParam Long id, @RequestBody ProductRequest product) {
+    public ResponseEntity<CommonResponse<ProductResponse>> update(@RequestParam Long id, @Valid @RequestBody ProductRequest product) {
         return ResponseUtil.createResponse(
                 HttpStatus.OK,
                 "Produk berhasil diperbaharui",
