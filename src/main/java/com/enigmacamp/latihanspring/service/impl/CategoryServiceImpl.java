@@ -25,12 +25,18 @@ public class CategoryServiceImpl implements CategoryService {
 
         categoryRepository.save(category);
 
-        return mapToResponse(category);
+        return CategoryResponse.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .build();
     }
 
     @Override
     public List<CategoryResponse> getCategories() {
-        return categoryRepository.findAll().stream().map(this::mapToResponse).toList();
+        return categoryRepository.findAll().stream().map(category -> CategoryResponse.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .build()).toList();
     }
 
     @Override
@@ -39,10 +45,5 @@ public class CategoryServiceImpl implements CategoryService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Category not found"));
     }
 
-    private CategoryResponse mapToResponse(Category category) {
-        return CategoryResponse.builder()
-                .id(category.getId())
-                .name(category.getName())
-                .build();
-    }
+    
 }

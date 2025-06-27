@@ -98,6 +98,7 @@ public class ProductServiceImpl implements ProductService {
         return mapToResponse(updateProduct);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void deleteProduct(Long id) {
         productRepository.deleteById(id);

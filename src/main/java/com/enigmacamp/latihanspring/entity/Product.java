@@ -21,18 +21,18 @@ public class Product {
     private Long id;
 
     @NotBlank(message = "Nama tidak boleh kosong")
-    @Column(name = "names", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "descriptions")
+    @Column(name = "description")
     private String description;
 
     @NotNull(message = "Harga tidak boleh kosong")
-    @Column(name = "prices", nullable = false)
+    @Column(name = "price", nullable = false)
     private BigDecimal price;
 
     @NotNull(message = "Kuantiti tidak boleh kosong")
-    @Column(name = "quantities", nullable = false)
+    @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
     @NotNull(message = "Status diperlukan")

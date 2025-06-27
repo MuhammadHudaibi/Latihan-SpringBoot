@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.enigmacamp.latihanspring.dto.request.ResendVerificationRequest;
+import com.enigmacamp.latihanspring.dto.request.VerificationRequest;
+
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
@@ -36,6 +39,26 @@ public class AuthController {
                 HttpStatus.OK,
                 "Login successful",
                 authService.login(request)
+        );
+    }
+
+    @PostMapping("/verify")
+    public ResponseEntity<CommonResponse<String>> verify(@Valid @RequestBody VerificationRequest request) {
+        authService.verify(request);
+        return ResponseUtil.createResponse(
+                HttpStatus.OK,
+                "Account verified successfully",
+                null
+        );
+    }
+
+    @PostMapping("/resend-verification")
+    public ResponseEntity<CommonResponse<String>> resendVerification(@Valid @RequestBody ResendVerificationRequest request) {
+        authService.resendVerification(request);
+        return ResponseUtil.createResponse(
+                HttpStatus.OK,
+                "Verification code sent successfully",
+                null
         );
     }
 }
